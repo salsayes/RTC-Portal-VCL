@@ -181,6 +181,7 @@ type
     FSyncUserEvents: boolean;
     FResponseTimeout: longint;
     FDataSendTimeout: longint;
+    FAllowDuplicateUserLogins: boolean;
 
     FOnSessionClosing: TRtcNotifyEvent;
     FBeforeLogin: TRtcPortalGateUserEvent;
@@ -307,6 +308,9 @@ type
 
     { If user does not exist when logging in, register the user automatically? }
     property AutoRegisterUsers:boolean read FAutoRegisterUsers write SetAutoRegisterUsers default False;
+
+    { Allow the same user to log in from multiple machines without closing existing sessions? }
+    property AllowDuplicateUserLogins:boolean read FAllowDuplicateUserLogins write FAllowDuplicateUserLogins default False;
 
     { This event can be used for additional controls during user registration.
       For example, to limit registrations only to users connecting from a specific
@@ -656,6 +660,7 @@ constructor TRtcPortalGateway.Create(AOwner: TComponent);
 
   FAutoRegisterUsers:=False;
   FWriteLog:=False;
+  FAllowDuplicateUserLogins:=False;
 
   MessPut:=TRtcRecord.Create;
   MessPutTick:=TRtcRecord.Create;
@@ -787,7 +792,7 @@ function TRtcPortalGateway.UserLogin(Sender:TRtcConnection; const username, pass
       LoggedIn.newRecord(username);
       Inc(LogInCounter);
       end
-    else if LoggedIn.asRecord[username].asString['ID']<>ID then
+    else if (not FAllowDuplicateUserLogins) and (LoggedIn.asRecord[username].asString['ID']<>ID) then
       begin
       UserLogout(Sender,username,password,True);
       Inc(LogInCounter);
@@ -874,7 +879,7 @@ function TRtcPortalGateway.UserLoggedIn(Sender:TRtcConnection; const username:St
   try
     if LoggedIn.isType[username]<>rtc_Record then
       Result:=False
-    else if LoggedIn.asRecord[username].asString['ID']<>ID then
+    else if (not FAllowDuplicateUserLogins) and (LoggedIn.asRecord[username].asString['ID']<>ID) then
       Result:=False
     else
       Result:=True;
