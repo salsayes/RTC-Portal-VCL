@@ -23,7 +23,7 @@ uses
   rtcPortalCli, rtcPortalHttpCli,
   rtcpFileTrans, rtcpFileTransUI,
   rtcpChat, rtcpChatUI,
-  rtcpDesktopHost,
+  rtcpDesktopHost, rtcpRemoteShell,
   rtcpDesktopControl, rtcpDesktopControlUI,
   rtcpFileExplore,
   rtcpCustomComm,
@@ -35,7 +35,7 @@ begin
   RegisterComponents('RTC Portal', [TRtcPortalClient, TRtcHttpPortalClient,
     TRtcPFileTransfer, TRtcPFileTransferUI, TRtcPChat, TRtcPChatUI,
     TRtcPDesktopHost, TRtcPDesktopControl, TRtcPDesktopControlUI,
-    TRtcPDesktopViewer, TRtcPFileExplorer, TRtcPCustomCommand,
+    TRtcPDesktopViewer, TRtcPFileExplorer, TRtcPCustomCommand, TRtcPRemoteShell,
     TRtcPortalGateway]);
 end;
 
