@@ -8,7 +8,7 @@ interface
 
 uses
   SysUtils, Classes,
-  Windows, ComObj, ActiveX, SyncObjs,
+  Windows, ComObj, ActiveX, SyncObjs, Registry,
 
   rtcSystem, rtcLog,
   rtcZLib, rtcInfo, rtcConn,
@@ -51,6 +51,8 @@ type
     FPutModule: TRtcClientModule;
 
     FLoginID: RtcString;
+    FHardwareID: RtcString;
+    FMachineGUID: RtcString;
     FCS: TCriticalSection;
     FErrorGet: integer;
     FErrorPut: integer;
@@ -153,6 +155,10 @@ type
     
     procedure SetLoginUserInfo(const Value: TRtcRecord);
     function GetLoginUserInfo: TRtcRecord;
+    procedure EnsureLoginUserInfo;
+    function GetHardwareID: RtcString;
+    function GetMachineGUID: RtcString;
+    procedure ApplyLoginDefaults;
 
   protected
 
@@ -325,6 +331,8 @@ type
       WARNING: Changing the "LoginUsername" property will CLEAR all User info assigned here,
       so you need to set "LoginUserName" first, then you can populate all "LoginUserInfo" values. }
     property LoginUserInfo:TRtcRecord read GetLoginUserInfo write SetLoginUserInfo;
+    property LocalHardwareID: RtcString read GetHardwareID;
+    property LocalMachineGUID: RtcString read GetMachineGUID;
 
   published
 
@@ -721,6 +729,7 @@ end;
 procedure TRtcPortalCli.ClientModuleLogin(Sender: TRtcConnection;
   Data: TRtcValue);
 begin
+  ApplyLoginDefaults;
   if not LoggedIn then
   begin
     with Data.NewFunction('Login') do
@@ -1826,6 +1835,84 @@ begin
       LogOut;
     FSubscribe := Value;
   end;
+end;
+
+procedure TRtcPortalCli.EnsureLoginUserInfo;
+begin
+  if FLoginUserInfo.isType<>rtc_Record then
+    FLoginUserInfo.newRecord;
+end;
+
+function TRtcPortalCli.GetHardwareID: RtcString;
+var
+  volSerial: DWORD;
+  maxCompLen, flags: DWORD;
+  compName: array[0..MAX_COMPUTERNAME_LENGTH] of Char;
+  compSize: DWORD;
+  sysDrive: String;
+begin
+  if FHardwareID='' then
+    begin
+    volSerial:=0;
+    maxCompLen:=0;
+    flags:=0;
+    sysDrive:=GetEnvironmentVariable('SystemDrive');
+    if sysDrive='' then
+      sysDrive:='C:';
+    sysDrive:=IncludeTrailingPathDelimiter(sysDrive);
+    GetVolumeInformation(PChar(sysDrive),nil,0,@volSerial,@maxCompLen,@flags,nil,0);
+
+    compSize:=MAX_COMPUTERNAME_LENGTH+1;
+    if GetComputerName(compName, compSize) then
+      FHardwareID:=RtcString(UpperCase(String(compName)))
+    else
+      FHardwareID:='';
+
+    if volSerial<>0 then
+      FHardwareID:=FHardwareID+'-'+RtcString(IntToHex(volSerial,8));
+
+    if FHardwareID='' then
+      FHardwareID:=NewGUID;
+    end;
+  Result:=FHardwareID;
+end;
+
+function TRtcPortalCli.GetMachineGUID: RtcString;
+var
+  reg: TRegistry;
+begin
+  if FMachineGUID='' then
+    begin
+    reg:=TRegistry.Create(KEY_READ);
+    try
+      reg.RootKey:=HKEY_LOCAL_MACHINE;
+      if reg.OpenKeyReadOnly('SOFTWARE\Microsoft\Cryptography') then
+        try
+          if reg.ValueExists('MachineGuid') then
+            FMachineGUID:=RtcString(reg.ReadString('MachineGuid'));
+        finally
+          reg.CloseKey;
+          end;
+    finally
+      reg.Free;
+      end;
+
+    if FMachineGUID='' then
+      FMachineGUID:=NewGUID;
+    end;
+  Result:=FMachineGUID;
+end;
+
+procedure TRtcPortalCli.ApplyLoginDefaults;
+var
+  info: TRtcRecord;
+begin
+  EnsureLoginUserInfo;
+  info:=FLoginUserInfo.asRecord;
+  if info.asText['hwid']='' then
+    info.asText['hwid']:=GetHardwareID;
+  if info.asText['guid']='' then
+    info.asText['guid']:=GetMachineGUID;
 end;
 
 procedure TRtcPortalCli.SetLoginUserInfo(const Value: TRtcRecord);
