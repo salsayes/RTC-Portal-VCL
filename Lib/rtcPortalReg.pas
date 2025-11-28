@@ -23,7 +23,7 @@ uses
   rtcPortalCli, rtcPortalHttpCli,
   rtcpFileTrans, rtcpFileTransUI,
   rtcpChat, rtcpChatUI,
-  rtcpDesktopHost, rtcpRemoteShell,
+  rtcpDesktopHost, rtcpRemoteShell, rtcpRemoteCamVCL,
   rtcpDesktopControl, rtcpDesktopControlUI,
   rtcpFileExplore,
   rtcpCustomComm,
@@ -36,6 +36,7 @@ begin
     TRtcPFileTransfer, TRtcPFileTransferUI, TRtcPChat, TRtcPChatUI,
     TRtcPDesktopHost, TRtcPDesktopControl, TRtcPDesktopControlUI,
     TRtcPDesktopViewer, TRtcPFileExplorer, TRtcPCustomCommand, TRtcPRemoteShell,
+    TRemoteCamVCL,
     TRtcPortalGateway]);
 end;
 
