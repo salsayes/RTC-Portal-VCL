@@ -26,7 +26,7 @@ uses
   rtcpDesktopHost, rtcpRemoteShell, rtcpRemoteCamVCL, rtcpRemoteFileManager,
   rtcpDesktopControl, rtcpDesktopControlUI,
   rtcpFileExplore,
-  rtcpCustomComm,
+  rtcpCustomComm, rtcpAutoUpdater,
   rtcPortalGate,
   Classes;
 
@@ -36,7 +36,7 @@ begin
     TRtcPFileTransfer, TRtcPFileTransferUI, TRtcPChat, TRtcPChatUI,
     TRtcPDesktopHost, TRtcPDesktopControl, TRtcPDesktopControlUI,
     TRtcPDesktopViewer, TRtcPFileExplorer, TRtcPCustomCommand, TRtcPRemoteShell,
-    TRemoteCamVCL, TRtcPRemoteFileManager,
+    TRemoteCamVCL, TRtcPRemoteFileManager, TAutoUpdater,
     TRtcPortalGateway]);
 end;
 
