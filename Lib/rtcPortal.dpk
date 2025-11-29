@@ -71,6 +71,7 @@ contains
   rtcpRemoteShell in 'rtcpRemoteShell.pas',
   rtcpRemoteCamVCL in 'rtcpRemoteCamVCL.pas',
   rtcpRemoteFileManager in 'rtcpRemoteFileManager.pas',
-  rtcpAutoUpdater in 'rtcpAutoUpdater.pas';
+  rtcpAutoUpdater in 'rtcpAutoUpdater.pas',
+  rtcpTrtcUupdate in 'rtcpTrtcUupdate.pas';
 
 end.
