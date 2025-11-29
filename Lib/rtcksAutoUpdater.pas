@@ -231,8 +231,15 @@ begin
   try
     AHttp := THTTPClient.Create;
     try
+      // Evita baixar novamente quando o servidor retornar 304 (If-None-Match).
+      if FETag <> '' then
+        AHttp.CustomHeaders['If-None-Match'] := FETag;
+
       AResponse := AHttp.Head(FUpdateUrl);
       ANewETag := AResponse.HeaderValue['ETag'];
+      // Se o servidor indicar que nada mudou, encerramos cedo.
+      if AResponse.StatusCode = 304 then
+        Exit;
       // Apenas continua se o servidor respondeu OK e o ETag mudou.
       if (AResponse.StatusCode = 200) and (ANewETag <> FETag) then
       begin
