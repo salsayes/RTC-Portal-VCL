@@ -310,3 +310,44 @@ begin
 end;
 
 end.
+
+{*
+  Exemplos de uso
+  ---------------------------------------------------------------------------
+  1) Uso básico
+     var
+       LUpdater: IrtcksAutoUpdater;
+     begin
+       LUpdater := CreateRtcksAutoUpdater(
+         'https://servidor.com/app.exe', // URL do executável ou instalador
+         '',                             // ETag atual (pode iniciar vazio)
+         300,                            // Intervalo em segundos
+         nil                             // Evento opcional para tratar update
+       );
+     end;
+
+  2) Integrado ao RTC Portal
+     - Crie o updater na inicialização do serviço/cliente do Portal e, no
+       callback, chame DoUpdate(True) para substituir o executável após
+       notificação ao usuário:
+
+       LUpdater := CreateRtcksAutoUpdater(URLPortal, ETagSalvo, 300,
+         procedure(Sender: TObject; AETag, AVersion: string)
+         begin
+           // Gravar novo ETag, exibir aviso e aplicar update
+           LUpdater.DoUpdate(True, '/RESTART');
+         end);
+
+  3) Integrado ao rtcpCustomComm
+     - Use o mesmo padrão, mas acione o download a partir de um comando
+       customizado (por exemplo, "check_update"). O callback pode enviar
+       mensagens pelo rtcpCustomComm antes de chamar DoUpdate:
+
+       LUpdater := CreateRtcksAutoUpdater(URLCustom, ETagSalvo, 300,
+         procedure(Sender: TObject; AETag, AVersion: string)
+         begin
+           // Notificar via canal customizado e, se autorizado, atualizar
+           CustomComm.Send('update-found:' + AVersion);
+           LUpdater.DoUpdate(True);
+         end);
+*}
