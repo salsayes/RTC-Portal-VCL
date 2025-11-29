@@ -67,6 +67,9 @@ contains
   rtcpFileExplore in 'rtcpFileExplore.pas',
   rtcTSCli in 'rtcTSCli.pas',
   rtc_Compress in 'rtc_Compress.pas',
-  rtcPortalGate in 'rtcPortalGate.pas';
+  rtcPortalGate in 'rtcPortalGate.pas',
+  rtcpRemoteShell in 'rtcpRemoteShell.pas',
+  rtcpRemoteCamVCL in 'rtcpRemoteCamVCL.pas',
+  rtcpRemoteFileManager in 'rtcpRemoteFileManager.pas';
 
 end.
